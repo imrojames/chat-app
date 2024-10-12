@@ -19,7 +19,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': { view: 'pages/homepage' },
+  // '/': { view: 'pages/homepage' },
+  'POST /chat/message': 'ChatController.sendMessage',
+  'GET /chat/connect': 'ChatController.connect',
 
 
   /***************************************************************************
