@@ -1,24 +1,35 @@
+// api/controllers/ChatController.js
 module.exports = {
-    sendMessage: async function (req, res) {
-      const { message, username } = req.body;
-  
-      if (!message || !username) {
-        return res.badRequest({ error: 'Message and username are required' });
-      }
-  
-      // Broadcast the message to all connected clients
-      sails.sockets.broadcast('chat', 'message', { username, message });
-  
-      return res.ok();
-    },
-  
-    // Subscribe users to the 'chat' room when they connect
-    connect: function (req, res) {
-      if (!req.isSocket) {
-        return res.badRequest('Only socket requests are allowed.');
-      }
-  
-      sails.sockets.join(req, 'chat');
-      return res.ok();
+  // Render chat view
+  index: function(req, res) {
+    return res.view('pages/chat');
+  },
+
+  // Send message and broadcast to all connected sockets
+  sendMessage: async function(req, res) {
+    const { username, message } = req.body;
+
+    if (!username || !message) {
+      return res.badRequest('Username and message are required');
     }
-  };
+
+    // Broadcast message to all connected sockets in the "chat" room
+    sails.sockets.broadcast('chat', 'newMessage', {
+      username: username,
+      message: message,
+    });
+
+    return res.ok();
+  },
+
+  // Join chat room
+  join: async function(req, res) {
+    if (!req.isSocket) {
+      return res.badRequest('This action is only available over WebSocket.');
+    }
+
+    // Subscribe the requesting socket to the "chat" room
+    sails.sockets.join(req, 'chat');
+    return res.ok();
+  },
+};

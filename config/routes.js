@@ -20,8 +20,9 @@ module.exports.routes = {
   ***************************************************************************/
 
   // '/': { view: 'pages/homepage' },
-  'POST /chat/message': 'ChatController.sendMessage',
-  'GET /chat/connect': 'ChatController.connect',
+  '/': 'ChatController.index', // Load chat page
+  'POST /chat/message': 'ChatController.sendMessage', // Send chat message
+  'GET /chat/join': 'ChatController.join', // Join chat room (WebSocket)
 
 
   /***************************************************************************

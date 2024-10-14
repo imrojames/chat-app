@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Room</title>
+  <script src="https://cdn.jsdelivr.net/npm/sails.io.js@1.2.1/dist/sails.io.js"></script>
+  <script>
+    io.sails.url = 'http://localhost:1337';
+    
+    // Join chat room once the page loads
+    window.onload = function() {
+      io.socket.get('/chat/join', function() {
+        console.log('Joined chat room');
+      });
+
+      // Listen for new messages
+      io.socket.on('newMessage', function(messageData) {
+        const chatbox = document.getElementById('chatbox');
+        const message = `<p><strong>${messageData.username}:</strong> ${messageData.message}</p>`;
+        chatbox.innerHTML += message;
+      });
+    };
+
+    // Send chat message
+    function sendMessage() {
+      const username = document.getElementById('username').value;
+      const message = document.getElementById('message').value;
+
+      io.socket.post('/chat/message', { username: username, message: message }, function(response) {
+        if (response === 'ok') {
+          document.getElementById('message').value = ''; // Clear input after sending
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Chat Room</h1>
+  <div>
+    <input type="text" id="username" placeholder="Enter your username" />
+    <input type="text" id="message" placeholder="Enter your message" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  
+  <div id="chatbox" style="border: 1px solid #000; width: 300px; height: 300px; overflow-y: scroll;">
+    <!-- Chat messages will appear here -->
+  </div>
+</body>
+</html>
